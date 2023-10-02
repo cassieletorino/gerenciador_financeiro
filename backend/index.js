@@ -20,6 +20,8 @@ const conection = mysql.createPool({
   password: ''
 });
 
+// Funções usuários
+
 const getAllUsuarios = async () =>{
   const [query] = await conection.execute('select * from usuario')
   return query
@@ -30,9 +32,50 @@ app.get('/usuarios', async (req, res)=>{
   return res.status(200).json(resultado)
 });
 
-app.get('/usuario/:id', async (req,res)=>{
+app.post('/salvar/usuario', async (req,res) =>{
+  const {nome, email} = req.body;
+  const [query] = await conection.execute('insert into usuario (nome, email) values (?, ?)', [nome, email]);
+  return res.json(query);
+});
+
+app.get('/obter/usuario/:id', async (req,res)=>{
   const {id} = req.params;
   const [query] = await conection.execute('select * from usuario where id = ?', [id]);
   if (query.length===0) return res.status(400).json({mensagem: 'nenhum usuario encontrado'});
   return res.status(200).json(query)
 });
+
+app.get('/buscar/usuario/:nome', async (req,res)=>{
+  const {nome} = req.params;
+  const [query] = await conection.execute('select * from usuario where nome like ?', ["%" + nome + "%"]);
+  if (query.length===0) return res.status(400).json({mensagem: 'nenhum usuario encontrado'});
+  return res.status(200).json(query)
+});
+
+app.get('/buscar/usuario/:nome', async (req,res)=>{
+  const {email} = req.params;
+  const [query] = await conection.execute('select * from usuario where email like ?', ["%" + email + "%"]);
+  if (query.length===0) return res.status(400).json({mensagem: 'nenhum usuario encontrado'});
+  return res.status(200).json(query)
+});
+
+app.delete('/usuario/:id', async (req, res) => {
+  const {id} = req.params;
+  const [query] = await conection.execute('delete * from usuario where id = ?', [id]);
+  return res.json(query);
+});
+
+app.put('/atualizar/usuario/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, email } = req.body;
+  const [query] = await conection.execute('update usuario set nome = ?, email = ? where id = ?', [nome, email, id]);
+  return res.json(query);
+});
+
+// Funções CategoriaReceita
+
+// Funções CategoriaDespesa
+
+// Funções Receita
+
+// Funções Despesa
