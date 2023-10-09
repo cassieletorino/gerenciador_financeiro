@@ -89,26 +89,28 @@ app.get("/categoriareceita", async (req, res) => {
   const resultado = await getAllCategoriaReceitas();
 
   if (resultado.length === 0) {
-    return res
-      .status(200)
-      .json({ mensagem: "Nenhuma categoria-receita encontrado no database!" });
+    return res.status(200).json({ mensagem: "Nenhuma categoria-receita encontrada no database!" });
   }
   return res.status(200).json(resultado);
 });
 
-app.get("/categoriareceita/:id", async (req, res) => {
+app.post("/salvar/categoriareceita", async (req, res) => {
+  const { nome } = req.body;
+  const [query] = await conection.execute(
+    "insert into categoria_receita (nome) values (?)",
+    [nome]
+  );
+  return res.json(query);
+});
+
+app.get("/obter/categoriareceita/:id", async (req, res) => {
   const { id } = req.params;
   const [query] = await conection.execute(
     "select * from categoria_receita where id = ?",
     [id]
   );
   if (query.length === 0)
-    return res
-      .status(400)
-      .json({
-        mensagem:
-          "Nenhuma categoria-receita encontrado por este id no database!",
-      });
+    return res.status(400).json({mensagem:"Nenhuma categoria-receita encontrada com este id no database!",});
   return res.status(200).json(query);
 });
 
@@ -119,53 +121,24 @@ app.get("/categoriareceita/buscarcategoria/:nome", async (req, res) => {
     ["%" + nome + "%"]
   );
   if (query.length === 0)
-    return res
-      .status(400)
-      .json({
-        mensagem: "Nenhuma categoria-receita encontrado por este nome!",
-      });
+    return res.status(400).json({mensagem: "Nenhuma categoria-receita encontrada por este nome!",});
   return res.status(200).json(query);
-});
-
-app.get("/categoriareceita/buscarcategoria/:tipo", async (req, res) => {
-  const { tipo } = req.params;
-  const [query] = await conection.execute(
-    "select * from categoria_receita where tipo like ?",
-    ["%" + tipo + "%"]
-  );
-  if (query.length === 0)
-    return res
-      .status(400)
-      .json({
-        mensagem: "Nenhuma categoria-receita encontrado por este tipo!",
-      });
-  return res.status(200).json(query);
-});
-
-app.post("/categoriareceita", async (req, res) => {
-  const { nome, tipo, usuario_id } = req.body;
-  const [query] = await conection.execute(
-    "insert into categoria_receita (nome, tipo, usuario_id) values (?, ?, ?)",
-    [nome, tipo, usuario_id]
-  );
-  return res.json(query);
-});
-
-app.put("/categoriareceita/:id", async (req, res) => {
-  const { id } = req.params;
-  const { nome, tipo } = req.body;
-  const [query] = await conection.execute(
-    "update categoria_receita set nome = ?, tipo = ? where id = ?",
-    [nome, tipo]
-  );
-  return res.json(query);
 });
 
 app.delete("/categoriareceita/:id", async (req, res) => {
   const { id } = req.params;
-  const [query] = await conection.execute(
-    "delete from categoria_receita where id = ?",
+  const [query] = await conection.execute("delete from categoria_receita where id = ?",
     [id]
+  );
+  return res.json(query);
+});
+
+app.put("/atualizar/categoriareceita/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nome } = req.body;
+  const [query] = await conection.execute(
+    "update categoria_receita set nome = ? where id = ?",
+    [nome ]
   );
   return res.json(query);
 });
@@ -180,79 +153,43 @@ app.get("/categoriadespesa", async (req, res) => {
   const resultado = await getAllCategoriaDespesa();
 
   if (resultado.length === 0) {
-    return res
-      .status(200)
-      .json({ mensagem: "Nenhuma categoria-despesa encontrado no database!" });
+    return res.status(200).json({ mensagem: "Nenhuma categoria-despesa encontrada no database!" });
   }
   return res.status(200).json(resultado);
 });
 
-app.get("/categoriadespesa/:id", async (req, res) => {
+app.post("/salvar/categoriadespesa", async (req, res) => {
+  const { nome } = req.body;
+  const [query] = await conection.execute(
+    "insert into categoria_despesa (nome) values (?)",
+    [nome]
+  );
+  return res.json(query);
+});
+
+app.get("/obter/categoriadespesa/:id", async (req, res) => {
   const { id } = req.params;
   const [query] = await conection.execute(
     "select * from categoria_despesa where id = ?",
     [id]
   );
   if (query.length === 0)
-    return res
-      .status(400)
-      .json({
-        mensagem:
-          "Nenhuma categoria-despesa encontrado por este id no database!",
-      });
+    return res.status(400).json({mensagem: "Nenhuma categoria-despesa encontrada com este id no database!",});
   return res.status(200).json(query);
 });
 
-app.get("/categoriadespesa/buscarcategoria/:nome", async (req, res) => {
+app.get("/buscar/categoriadespesa/:nome", async (req, res) => {
   const { nome } = req.params;
   const [query] = await conection.execute(
     "select * from categoria_despesa where nome like ?",
     ["%" + nome + "%"]
   );
   if (query.length === 0)
-    return res
-      .status(400)
-      .json({
-        mensagem: "Nenhuma categoria-despesa encontrado por este nome!",
-      });
+    return res.status(400).json({ mensagem: "Nenhuma categoria-despesa encontrada por este nome!",});
   return res.status(200).json(query);
 });
 
-app.get("/categoriadespesa/buscarcategoria/:tipo", async (req, res) => {
-  const { tipo } = req.params;
-  const [query] = await conection.execute(
-    "select * from categoria_despesa where tipo like ?",
-    ["%" + tipo + "%"]
-  );
-  if (query.length === 0)
-    return res
-      .status(400)
-      .json({
-        mensagem: "Nenhuma categoria-despesa encontrado por este tipo!",
-      });
-  return res.status(200).json(query);
-});
-
-app.post("/categoriadespesa", async (req, res) => {
-  const { nome, tipo, usuario_id } = req.body;
-  const [query] = await conection.execute(
-    "insert into categoria_despesa (nome, tipo, usuario_id) values (?, ?, ?)",
-    [nome, tipo, usuario_id]
-  );
-  return res.json(query);
-});
-
-app.put("/categoriadespesa/:id", async (req, res) => {
-  const { id } = req.params;
-  const { nome, tipo } = req.body;
-  const [query] = await conection.execute(
-    "update categoria_despesa set nome = ?, tipo = ? where id = ?",
-    [nome, tipo]
-  );
-  return res.json(query);
-});
-
-app.delete("/categoriadespesa/:id", async (req, res) => {
+app.delete("/apagar/categoriadespesa/:id", async (req, res) => {
   const { id } = req.params;
   const [query] = await conection.execute(
     "delete from categoria_despesa where id = ?",
@@ -261,6 +198,186 @@ app.delete("/categoriadespesa/:id", async (req, res) => {
   return res.json(query);
 });
 
+app.put("/atualizar/categoriadespesa/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nome } = req.body;
+  const [query] = await conection.execute(
+    "update categoria_despesa set nome = ?  where id = ?",
+    [nome]
+  );
+  return res.json(query);
+});
+
 // Funções Receita
+const getAllReceita = async () => {
+  const [query] = await conection.execute("select * from receita");
+  return query;
+};
+
+app.get("/receita", async (req, res) => {
+  const resultado = await getAllReceita();
+
+  if (resultado.length === 0) {
+    return res.status(200).json({ mensagem: "Nenhuma receita encontrada no database!" });
+  }
+  return res.status(200).json(resultado);
+});
+
+app.post("/salvar/receita", async (req, res) => {
+  const { nome } = req.body;
+  const [query] = await conection.execute(
+    "insert into receita (nome, descricao, valor, data) values (?, ?, ?, ?)",
+    [nome, descricao, valor, data]
+  );
+  return res.json(query);
+});
+
+app.get("/obter/receita/:id", async (req, res) => {
+  const { id } = req.params;
+  const [query] = await conection.execute(
+    "select * from receita where id = ?",
+    [id]
+  );
+  if (query.length === 0)
+    return res.status(400).json({mensagem:"Nenhuma receita encontrada com este id.",});
+  return res.status(200).json(query);
+});
+
+app.get("/receita/buscar/:descricao", async (req, res) => {
+  const { descricao } = req.params;
+  const [query] = await conection.execute(
+    "select * from receita where descricao like ?",
+    ["%" + descricao + "%"]
+  );
+  if (query.length === 0)
+    return res.status(400).json({mensagem: "Nenhuma receita encontrada por este nome!",});
+  return res.status(200).json(query);
+});
+
+app.get("/receita/buscarcategoria/:CategoriaReceita", async (req, res) => {
+  const { CategoriaReceita } = req.params;
+  const [query] = await conection.execute(
+    "select * from receita where CategoriaReceita like ?",
+    ["%" + CategoriaReceita + "%"]
+  );
+  if (query.length === 0)
+    return res.status(400).json({mensagem: "Nenhuma receita encontrada com esta categoria!",});
+  return res.status(200).json(query);
+});
+
+app.get("/receita/buscardata/:data", async (req, res) => {
+  const { data } = req.params;
+  const [query] = await conection.execute(
+    "select * from receita where data like ?",
+    ["%" + data + "%"]
+  );
+  if (query.length === 0)
+    return res.status(400).json({mensagem: "Nenhuma receita encontrada com esta data!",});
+  return res.status(200).json(query);
+});
+
+app.delete("/apagar/receita/:id", async (req, res) => {
+  const { id } = req.params;
+  const [query] = await conection.execute(
+    "delete from receita where id = ?",
+    [id]
+  );
+  return res.json(query);
+});
+
+app.put("/atualizar/receita/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nome } = req.body;
+  const [query] = await conection.execute(
+    "update receita set nome = ?, descricao = ?, valor = ?, data = ? where id = ?",
+    [nome, descricao, valor, data]
+  );
+  return res.json(query);
+});
 
 // Funções Despesa
+const getAllDespesa = async () => {
+  const [query] = await conection.execute("select * from despesa");
+  return query;
+};
+
+app.get("/despesa", async (req, res) => {
+  const resultado = await getAllDespesa();
+
+  if (resultado.length === 0) {
+    return res.status(200).json({ mensagem: "Nenhuma despesa encontrada no database!" });
+  }
+  return res.status(200).json(resultado);
+});
+
+app.post("/salvar/despesa", async (req, res) => {
+  const { nome } = req.body;
+  const [query] = await conection.execute(
+    "insert into despesa (nome, descricao, valor, data) values (?, ?, ?, ?)",
+    [nome, descricao, valor, data]
+  );
+  return res.json(query);
+});
+
+app.get("/obter/despesa/:id", async (req, res) => {
+  const { id } = req.params;
+  const [query] = await conection.execute(
+    "select * from despesa where id = ?",
+    [id]
+  );
+  if (query.length === 0)
+    return res.status(400).json({mensagem:"Nenhuma despesa encontrada com este id.",});
+  return res.status(200).json(query);
+});
+
+app.get("/despesa/buscar/:descricao", async (req, res) => {
+  const { descricao } = req.params;
+  const [query] = await conection.execute(
+    "select * from despesa where descricao like ?",
+    ["%" + descricao + "%"]
+  );
+  if (query.length === 0)
+    return res.status(400).json({mensagem: "Nenhuma despesa encontrada por este nome!",});
+  return res.status(200).json(query);
+});
+
+app.get("/despesa/buscarcategoria/:CategoriaDespesa", async (req, res) => {
+  const { CategoriaDespesa } = req.params;
+  const [query] = await conection.execute(
+    "select * from despesa where CategoriaDespesa like ?",
+    ["%" + CategoriaDespesa + "%"]
+  );
+  if (query.length === 0)
+    return res.status(400).json({mensagem: "Nenhuma despesa encontrada com esta categoria!",});
+  return res.status(200).json(query);
+});
+
+app.get("/despesa/buscardata/:data", async (req, res) => {
+  const { data } = req.params;
+  const [query] = await conection.execute(
+    "select * from despesa where data like ?",
+    ["%" + data + "%"]
+  );
+  if (query.length === 0)
+    return res.status(400).json({mensagem: "Nenhuma despesa encontrada com esta data!",});
+  return res.status(200).json(query);
+});
+
+app.delete("/apagar/despesa/:id", async (req, res) => {
+  const { id } = req.params;
+  const [query] = await conection.execute(
+    "delete from despesa where id = ?",
+    [id]
+  );
+  return res.json(query);
+});
+
+app.put("/atualizar/despesa/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nome } = req.body;
+  const [query] = await conection.execute(
+    "update despesa set nome = ?, descricao = ?, valor = ?, data = ? where id = ?",
+    [nome, descricao, valor, data]
+  );
+  return res.json(query);
+});
