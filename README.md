@@ -1,6 +1,6 @@
 # Projeto Gerenciador Financeiro
 
-**Autor:** Cassiele Ketlin Torino
+**Autores:** Cassiele Torino, Gabriela Aimée e Luisa Santos
 
 ### Descrição do Projeto
 Gerenciador Financeiro, Node, React e MySQL
